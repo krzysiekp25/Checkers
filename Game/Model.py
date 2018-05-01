@@ -5,8 +5,9 @@ class Model:
         self.__controller = None
         self.board = None
         self.n = 8
-        self.selected_button = [None, None]
+        self.selected_button = None
         self.player_round = 1
+        self.beating = 0
 
     def add_controller(self, controller):
         self.__controller = controller
@@ -27,40 +28,37 @@ class Model:
 
     def select_button(self, r, c):
         clicked = self.board[r][c]
-        if self.selected_button[0] == r and self.selected_button[1] == c:
-            #jeżeli juz zaznaczony to odznaczamy i ustawiamy selected_button na none
-            self.unselect_button(clicked)
+        if self.selected_button is not None and self.selected_button.row == r and self.selected_button.column == c:#odznaczamy
+            self.unselect_button()
+        elif self.selected_button is not None:#zaznaczamy drugie pole
+            if self.selected_button.can_move(clicked, self.board, self.player_round):
+                self.move_button(self.selected_button, clicked)
+            else:
+                self.__controller.message('Ruch niedozwolony!')
+        elif type(clicked) is not PustePole and clicked.player is self.player_round:#zaznaczamy
+            self.select(clicked)
+        elif type(clicked) is not PustePole:
+            self.__controller.message('Runda przeciwnika!')
+        else:
+            self.__controller.message('Nie mozna zaznaczyc pustego pola!')
 
-        elif self.selected_button[0] is not None and self.selected_button[1] is not None:
-            #jeeli jeden zaznaczony, to przy zaznaczeniu drugiego wykonujemy operacje
-            selected = self.board[self.selected_button[0]][self.selected_button[1]]
-            #self.__controller.message('Aktualnie zaznaczono pole {}{}. W tym czasie wybrałeś pole {}{}()'.format(self.selected_button[0], self.selected_button[1], r, c, self.player_round))
-            if type(clicked) is PustePole and self.player_round is 1:
-                if r - self.selected_button[0] is 1 and abs(self.selected_button[1] - c) is 1:
-                    self.unselect_button(selected)
-                    self.switch_places(clicked, selected)
-                    self.change_round()
-
-            elif type(clicked) is PustePole and self.player_round is 2:
-                if self.selected_button[0] - r is 1 and abs(self.selected_button[1] - c) is 1:
-                    self.unselect_button(selected)
-                    self.switch_places(clicked, selected)
-                    self.change_round()
-
-        elif type(clicked) is not PustePole and clicked.player is self.player_round:
-            #nic nie jest zaznaczone wiec zaznaczamy buttona w pozycji r, c
-            clicked.text = '[{}]'.format(clicked.text)
-            self.selected_button[0] = r
-            self.selected_button[1] = c
-            self.__controller.update_button(clicked)
-
-    def unselect_button(self, pionek):
-        pionek.text = pionek.text[1:-1]
-        self.selected_button[0] = None
-        self.selected_button[1] = None
+    def select(self, pionek):
+        self.selected_button = pionek
+        pionek.text = '[{}]'.format(pionek.text)
         self.__controller.update_button(pionek)
 
+    def unselect_button(self):
+        self.selected_button.text = self.selected_button.text[1:-1]
+        self.__controller.update_button(self.selected_button)
+        self.selected_button = None
+
+    def move_button(self, pionek, pole):
+        self.unselect_button()
+        self.switch_places(pole, pionek)
+        self.change_round()
+
     def change_round(self):
+        # badamy całą planszę i to czy nie ma bicia, jak tak to ustawiamy flagę bicia
         if self.player_round is 1:
             self.player_round = 2
         else:

@@ -15,24 +15,6 @@ class View(tk.Frame):
     def clicked(self, r, c):
         self.__controller.clicked(r, c)
 
-    def zamiana(self, r, c):
-        print('row {} columnt {}'.format(r, c))
-        if (r != 8 and c != 9):
-            new_tmp = tk.Button(self, text=self.test['text'], command=lambda row=r, column=c: self.clicked(row, column),
-                                bg=self.test['bg'], fg=self.test['fg'], height=4, width=8)
-            self.test.destroy()
-            clicked_button = self.buttons[r][c]
-            self.test = tk.Button(self, text=clicked_button['text'],
-                                  command=lambda row=8, column=9: self.clicked(row, column), bg=clicked_button['bg'],
-                                  fg=clicked_button['fg'], height=4, width=8)
-            clicked_button.destroy()
-            self.buttons[r][c] = new_tmp
-            new_tmp.grid(row=r, column=c)
-            self.test.grid(row=8, column=9)
-            # zrobic tak, ze wysylam do kontrolera informacje co klikniete a on zapamietuje
-            # jezeli klikne 2 raz to kontroler wysyla informacje zeby cos zamienic miejscami jesli sie da
-            # zamiana zaimplementowana jest powyzej :)
-
     def draw_board(self, board, n):
         self.pack()
         self.create_widgets(board, n)
@@ -60,9 +42,8 @@ class View(tk.Frame):
     def update_button(self, tmp):
         self.buttons[tmp.row][tmp.column].destroy()
         self.buttons[tmp.row][tmp.column] = tk.Button(self, text=tmp.text,
-                                                      command=lambda row=tmp.row, column=tmp.column: self.clicked(row,
-                                                                                                                  column),
-                                                      bg=tmp.bg, fg=tmp.fg, height=tmp.height, width=tmp.width)
+                                                    command=lambda row=tmp.row, column=tmp.column: self.clicked(row,
+                                                    column), bg=tmp.bg, fg=tmp.fg, height=tmp.height, width=tmp.width)
         buf = self.buttons[tmp.row][tmp.column]
         buf.grid(row=tmp.row, column=tmp.column)
 
