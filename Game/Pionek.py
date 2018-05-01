@@ -11,7 +11,7 @@ class Pionek():
     def can_move(self, clicked, board, round):
         return None
 
-    def can_beat(self, clicked, board, round):
+    def can_beat(self, clicked, board):
         return None
 
 class ZwyklyPionek(Pionek):
@@ -35,8 +35,17 @@ class ZwyklyPionek(Pionek):
         else:
             return False
 
-        def can_beat(self, clicked, board, round):
-            return None
+    def can_beat(self, clicked, board):
+        r = int((self.row+clicked.row)/2)
+        c = int((self.column+clicked.column)/2)
+        beated = board[r][c]
+        if type(clicked) is PustePole and type(beated) is not PustePole and beated.player is not self.player:
+            if abs(self.row-clicked.row) is 2 and abs(self.column-clicked.column) is 2:
+                    return True
+        else:
+            return False
+        #badamy czy pionek moze zbic pionka przeskakujac na pole clicked
+
 
 class Damka(Pionek):
     def __init__(self, text="Pb", bg="black", fg="white", row=0, column=0, height=4, width=8, player=1):

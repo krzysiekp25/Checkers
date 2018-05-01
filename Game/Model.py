@@ -7,7 +7,8 @@ class Model:
         self.n = 8
         self.selected_button = None
         self.player_round = 1
-        self.beating = 0
+        self.beating_player_1 = False
+        self.beating_player_2 = False
 
     def add_controller(self, controller):
         self.__controller = controller
@@ -31,8 +32,24 @@ class Model:
         if self.selected_button is not None and self.selected_button.row == r and self.selected_button.column == c:#odznaczamy
             self.unselect_button()
         elif self.selected_button is not None:#zaznaczamy drugie pole
-            if self.selected_button.can_move(clicked, self.board, self.player_round):
+            if self.beating_player_1 is True and self.player_round is 2 and self.selected_button.can_move(clicked, self.board, self.player_round):
                 self.move_button(self.selected_button, clicked)
+            elif self.beating_player_2 is True and self.player_round is 1 and self.selected_button.can_move(clicked, self.board, self.player_round):
+                self.move_button(self.selected_button, clicked)
+            elif self.beating_player_1 is False and self.beating_player_2 is False and self.selected_button.can_move(clicked, self.board, self.player_round):
+                self.move_button(self.selected_button, clicked)
+            elif self.beating_player_1 is True and self.player_round is 1:
+                if self.selected_button.can_beat(clicked, self.board):
+                    self.beat_and_move(self.selected_button, clicked)
+                    self.__controller.message('Bicie!')
+                else:
+                    self.__controller.message('Ruch niedozwolony!')
+            elif self.beating_player_2 is True and self.player_round is 2:
+                if self.selected_button.can_beat(clicked, self.board):
+                    self.beat_and_move(self.selected_button, clicked)
+                    self.__controller.message('Bicie!')
+                else:
+                    self.__controller.message('Ruch niedozwolony!')
             else:
                 self.__controller.message('Ruch niedozwolony!')
         elif type(clicked) is not PustePole and clicked.player is self.player_round:#zaznaczamy
@@ -58,12 +75,45 @@ class Model:
         self.change_round()
 
     def change_round(self):
-        # badamy całą planszę i to czy nie ma bicia, jak tak to ustawiamy flagę bicia
-        if self.player_round is 1:
-            self.player_round = 2
+        aktualneb1 = self.beating_player_1
+        aktualneb2 = self.beating_player_2
+        if aktualneb1 is True and self.player_round is 2:
+            aktualneb1 = False
+        if aktualneb2 is True and self.player_round is 1:
+            aktualneb2 = False
+        self.change_beating()#ustawiamy beating player od nowa
+        #nie zmieniamy kiedy mamy kolejne bicie
+        if aktualneb1 is True and self.beating_player_1 is True:
+            pass
+        elif aktualneb2 is True and self.beating_player_2 is True:
+            pass
         else:
-            self.player_round = 1
+            if self.player_round is 1:
+                self.player_round = 2
+            else:
+                self.player_round = 1
         #dodac rysowanie na planszy informacji czyja runda
+
+    def change_beating(self):
+        self.beating_player_1 = False
+        self.beating_player_2 = False
+        for x in self.board:
+            for y in x:
+                if type(y) is ZwyklyPionek:
+                    r = y.row
+                    c = y.column
+                    if r+2 < self.n and c+2 < self.n:#prawo dół
+                        if y.can_beat(self.board[r+2][c+2], self.board):
+                            self.set_beating(y)
+                    if r+2 < self.n and c-2 >= 0:#lewo dół
+                        if y.can_beat(self.board[r+2][c-2], self.board):
+                            self.set_beating(y)
+                    if r-2 >= 0 and c+2 < self.n:#prawo góra
+                        if y.can_beat(self.board[r-2][c+2], self.board):
+                            self.set_beating(y)
+                    if r-2 >= 0 and c-2 >= 0:#lewo góra
+                        if y.can_beat(self.board[r-2][c-2], self.board):
+                            self.set_beating(y)
 
     def switch_places(self, first, second):
         #zapaietuje pozycje
@@ -83,3 +133,20 @@ class Model:
         #aktualizacja grafiki
         self.__controller.update_button(first)
         self.__controller.update_button(second)
+
+    def set_beating(self, pionek):
+        if pionek.player is 1:
+            self.beating_player_1 = True
+        elif pionek.player is 2:
+            self.beating_player_2 = True
+
+    def beat_and_move(self, first, second):
+        self.unselect_button()
+        if type(first) is ZwyklyPionek:
+            r = int((first.row + second.row) / 2)
+            c = int((first.column + second.column) / 2)
+            p = PustePole(text="", bg="black", fg="white", row=r, column=c)
+            self.board[r][c] = p
+            self.__controller.update_button(p)
+        self.switch_places(first, second)
+        self.change_round()
