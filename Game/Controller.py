@@ -19,4 +19,7 @@ class Controller:
     def message(self, m):
         self.__view.show_message(m)
 
+    def change_round(self):
+        self.__view.change_round()
+
 
