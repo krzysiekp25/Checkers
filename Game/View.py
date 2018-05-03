@@ -4,21 +4,22 @@ from tkinter import messagebox
 class View(tk.Frame):
     def __init__(self):
         self.root = tk.Tk()
+        self.root.resizable(False, False)
         super().__init__(self.root)
         self.__controller = None
         self.buttons = None
         self.clicked_button = None
         self.round = None
-        self.pionekb = tk.PhotoImage(file="img/pionekb.gif")
-        self.pionekbD = tk.PhotoImage(file="img/pionekbD.gif")
-        self.pionekbs = tk.PhotoImage(file="img/pionekbs.gif")
-        self.pionekbDs = tk.PhotoImage(file="img/pionekbDs.gif")
-        self.pionekc = tk.PhotoImage(file="img/pionekc.gif")
-        self.pionekcD = tk.PhotoImage(file="img/pionekcD.gif")
-        self.pionekcs = tk.PhotoImage(file="img/pionekcs.gif")
-        self.pionekcDs = tk.PhotoImage(file="img/pionekcDs.gif")
-        self.polec = tk.PhotoImage(file="img/polec.gif")
-        self.poleb = tk.PhotoImage(file="img/poleb.gif")
+        self.__pionekb = tk.PhotoImage(file="img/pionekb.gif")
+        self.__pionekbD = tk.PhotoImage(file="img/pionekbD.gif")
+        self.__pionekbs = tk.PhotoImage(file="img/pionekbs.gif")
+        self.__pionekbDs = tk.PhotoImage(file="img/pionekbDs.gif")
+        self.__pionekc = tk.PhotoImage(file="img/pionekc.gif")
+        self.__pionekcD = tk.PhotoImage(file="img/pionekcD.gif")
+        self.__pionekcs = tk.PhotoImage(file="img/pionekcs.gif")
+        self.__pionekcDs = tk.PhotoImage(file="img/pionekcDs.gif")
+        self.__polec = tk.PhotoImage(file="img/polec.gif")
+        self.__poleb = tk.PhotoImage(file="img/poleb.gif")
 
     def add_controller(self, controller):
         self.__controller = controller
@@ -30,7 +31,7 @@ class View(tk.Frame):
         self.pack()
         self.create_widgets(board, n)
 
-    def draw_window(self, width=700, height=600, title='Warcaby'):
+    def draw_window(self, width=780, height=530, title='Warcaby'):
         self.root.geometry('{}x{}'.format(width, height))
         self.winfo_toplevel().title(title)
 
@@ -45,9 +46,9 @@ class View(tk.Frame):
                                                bg=tmp.bg, fg=tmp.fg, image=img, compound='none')
                 buf = self.buttons[x][y]
                 buf.grid(row=tmp.row, column=tmp.column)
-        self.quit = tk.Button(self, text="QUIT", fg="red", command=self.root.destroy)
+        self.quit = tk.Button(self, text="ZAMKNIJ", fg="black", command=self.root.destroy, font=(None, 10))
         self.quit.grid(row=2, column=8)
-        self.round = tk.Label(self, text="Tura gracza 1", fg="red", height=4, width=16)
+        self.round = tk.Label(self, text="Tura gracza 1", fg="black", height=1, width=15, font=(None, 20))
         self.round.grid(row=0, column=8)
 
     def start_loop(self):
@@ -75,22 +76,22 @@ class View(tk.Frame):
 
     def select_img(self, txt):
         if txt == 'b':
-            return self.polec
+            return self.__polec
         if txt == 'w':
-            return self.poleb
+            return self.__poleb
         if txt == 'Pb':
-            return self.pionekb
+            return self.__pionekb
         if txt == 'Pc':
-            return self.pionekc
+            return self.__pionekc
         if txt == '[Pb]':
-            return self.pionekbs
+            return self.__pionekbs
         if txt == '[Pc]':
-            return self.pionekcs
+            return self.__pionekcs
         if txt == 'PbD':
-            return self.pionekbD
+            return self.__pionekbD
         if txt == 'PcD':
-            return self.pionekcD
+            return self.__pionekcD
         if txt == '[PbD]':
-            return self.pionekbDs
+            return self.__pionekbDs
         if txt == '[PcD]':
-            return self.pionekcDs
+            return self.__pionekcDs
