@@ -16,6 +16,7 @@ class Pionek(PustePole):
     have_beating1 = False
     have_beating2 = False
 
+    @staticmethod
     def have_beating(round):
         if round is 1 and Pionek.have_beating1 is True:
             return True

@@ -22,4 +22,11 @@ class Controller:
     def change_round(self):
         self.__view.change_round()
 
+    def reset(self):
+        board = self.__model.create_board()
+        n = self.__model.n
+        self.__view.reset_board(board, n)
 
+    def create_testing_board(self, board):
+        n = self.__model.n
+        self.__view.reset_board(board, n)

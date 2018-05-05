@@ -95,3 +95,20 @@ class View(tk.Frame):
             return self.__pionekbDs
         if txt == '[PcD]':
             return self.__pionekcDs
+
+    def reset_board(self, board, n):
+        for x in self.buttons:
+            for y in x:
+                y.destroy()
+        for x in range(0, n, 1):
+            for y in range(0, n, 1):
+                tmp = board[x][y]
+                img = self.select_img(tmp.text)
+                self.buttons[x][y] = tk.Button(self, text=tmp.text,
+                                               command=lambda row=tmp.row, column=tmp.column: self.clicked(row, column),
+                                               bg=tmp.bg, fg=tmp.fg, image=img, compound='none')
+                buf = self.buttons[x][y]
+                buf.grid(row=tmp.row, column=tmp.column)
+        self.round.destroy()
+        self.round = tk.Label(self, text="Tura gracza 1", fg="black", height=1, width=15, font=(None, 20))
+        self.round.grid(row=0, column=8)
