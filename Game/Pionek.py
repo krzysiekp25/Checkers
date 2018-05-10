@@ -11,6 +11,7 @@ class PustePole():
 class Pionek(PustePole):
     def __init__(self, text="Pb", bg="black", fg="white", row=0, column=0, height=4, width=8, player=1):
         super().__init__(text, bg, fg, row, column, height, width)
+        self.player = player
         self.__beating = False
         self.player = player
     have_beating1 = False

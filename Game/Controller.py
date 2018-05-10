@@ -5,7 +5,7 @@ class Controller:
 
     def start(self):
         board = self.__model.create_board()
-        n = self.__model.n
+        n = self.__model.get_n()
         self.__view.draw_window()
         self.__view.draw_board(board, n)
         self.__view.start_loop()
@@ -24,9 +24,18 @@ class Controller:
 
     def reset(self):
         board = self.__model.create_board()
-        n = self.__model.n
+        n = self.__model.get_n()
         self.__view.reset_board(board, n)
 
     def create_testing_board(self, board):
-        n = self.__model.n
+        n = self.__model.get_n()
         self.__view.reset_board(board, n)
+
+    def hard_reset(self):
+        board = self.__model.create_board()
+        n = self.__model.get_n()
+        self.__view.reset_board(board, n)
+        self.__model.hard_reset();
+
+    def clicked_test(self, number):
+        self.__model.create_testing_board(number)

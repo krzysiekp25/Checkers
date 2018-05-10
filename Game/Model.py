@@ -3,8 +3,8 @@ from Game.Pionek import *
 
 class Model:
     def __init__(self):
-        self.board = None
-        self.n = 8
+        self.__board = None
+        self.__n = 8
         self.__controller = None
         self.__selected_button = None
         self.__player_round = 1
@@ -12,33 +12,36 @@ class Model:
         self.__player2_pionki = 12
         self.__reset = False
 
+    def get_n(self):
+        return self.__n
+
     def add_controller(self, controller):
         self.__controller = controller
 
     def create_board(self):
-        self.board = [["bc"[(i + j + self.n % 2 + 1) % 2] for i in range(self.n)] for j in range(self.n)]
-        for x in range(0, self.n, 1):
-            for y in range(0, self.n, 1):
-                if x in range(0, 3, 1) and self.board[x][y] == 'c':
-                    self.board[x][y] = ZwyklyPionek(text='Pb', bg='black', fg='white', row=x, column=y, player=1)
+        self.__board = [["bc"[(i + j + self.__n % 2 + 1) % 2] for i in range(self.__n)] for j in range(self.__n)]
+        for x in range(0, self.__n, 1):
+            for y in range(0, self.__n, 1):
+                if x in range(0, 3, 1) and self.__board[x][y] == 'c':
+                    self.__board[x][y] = ZwyklyPionek(text='Pb', bg='black', fg='white', row=x, column=y, player=1)
                     #self.board[x][y] = Damka(text='PbD', bg='black', fg='white', row=x, column=y, player=1)
-                elif x in range(5, 8, 1) and self.board[x][y] == 'c':
-                    self.board[x][y] = ZwyklyPionek(text='Pc', bg='black', fg='white', row=x, column=y, player=2)
-                elif self.board[x][y] == 'c':
-                    self.board[x][y] = PustePole(text='b', bg='black', row=x, column=y)
+                elif x in range(5, 8, 1) and self.__board[x][y] == 'c':
+                    self.__board[x][y] = ZwyklyPionek(text='Pc', bg='black', fg='white', row=x, column=y, player=2)
+                elif self.__board[x][y] == 'c':
+                    self.__board[x][y] = PustePole(text='b', bg='black', row=x, column=y)
                 else:
-                    self.board[x][y] = PustePole(text='w', bg='white', row=x, column=y)
-        return self.board
+                    self.__board[x][y] = PustePole(text='w', bg='white', row=x, column=y)
+        return self.__board
 
     def select_button(self, r, c):
-        clicked = self.board[r][c]
+        clicked = self.__board[r][c]
         if self.__selected_button is not None and self.__selected_button.row == r and self.__selected_button.column == c:  # odznaczamy
             self.unselect_button()
         elif self.__selected_button is not None:  # zaznaczamy drugie pole
-            if Pionek.have_beating(self.__player_round) is False and self.__selected_button.can_move(clicked, self.board):
+            if Pionek.have_beating(self.__player_round) is False and self.__selected_button.can_move(clicked, self.__board):
                 self.move_button(self.__selected_button, clicked)
             elif self.__selected_button.beating() is True:
-                if self.__selected_button.can_beat(clicked, self.board):
+                if self.__selected_button.can_beat(clicked, self.__board):
                     self.beat_and_move(self.__selected_button, clicked)
                 else:
                     self.__controller.message('Ruch niedozwolony!')
@@ -80,10 +83,10 @@ class Model:
         self.__controller.change_round()
 
     def change_beating(self):
-        for x in self.board:
+        for x in self.__board:
             for y in x:
                 if type(y) is not PustePole:
-                    y.find_and_set_beating(self.board, self.n)
+                    y.find_and_set_beating(self.__board, self.__n)
 
     def switch_places(self, first, second):
 
@@ -101,8 +104,8 @@ class Model:
 
         # zamieniam pozycje w tablicy
         tmp = first
-        self.board[frow][fcolumn] = self.board[srow][scolumn]
-        self.board[srow][scolumn] = tmp
+        self.__board[frow][fcolumn] = self.__board[srow][scolumn]
+        self.__board[srow][scolumn] = tmp
 
         # aktualizacja grafiki
         self.__controller.update_button(first)
@@ -114,7 +117,7 @@ class Model:
             r = int((first.row + second.row) / 2)
             c = int((first.column + second.column) / 2)
             p = PustePole(text="b", bg="black", fg="white", row=r, column=c)
-            self.board[r][c] = p
+            self.__board[r][c] = p
             self.__controller.update_button(p)
         elif type(first) is Damka:
             r = int(first.row - second.row)
@@ -125,8 +128,8 @@ class Model:
                 tmprow = first.row - 1
                 tmpcolumn = first.column - 1
                 while tmprow != second.row and tmpcolumn != second.column:
-                    if type(self.board[tmprow][tmpcolumn]) is not PustePole:
-                        p = self.board[tmprow][tmpcolumn]
+                    if type(self.__board[tmprow][tmpcolumn]) is not PustePole:
+                        p = self.__board[tmprow][tmpcolumn]
                         break
                     tmprow = tmprow - 1
                     tmpcolumn = tmpcolumn - 1
@@ -135,8 +138,8 @@ class Model:
                 tmprow = first.row - 1
                 tmpcolumn = first.column + 1
                 while tmprow != second.row and tmpcolumn != second.column:
-                    if type(self.board[tmprow][tmpcolumn]) is not PustePole:
-                        p = self.board[tmprow][tmpcolumn]
+                    if type(self.__board[tmprow][tmpcolumn]) is not PustePole:
+                        p = self.__board[tmprow][tmpcolumn]
                         break
                     tmprow = tmprow - 1
                     tmpcolumn = tmpcolumn + 1
@@ -145,8 +148,8 @@ class Model:
                 tmprow = first.row + 1
                 tmpcolumn = first.column - 1
                 while tmprow != second.row and tmpcolumn != second.column:
-                    if type(self.board[tmprow][tmpcolumn]) is not PustePole:
-                        p = self.board[tmprow][tmpcolumn]
+                    if type(self.__board[tmprow][tmpcolumn]) is not PustePole:
+                        p = self.__board[tmprow][tmpcolumn]
                         break
                     tmprow = tmprow + 1
                     tmpcolumn = tmpcolumn - 1
@@ -155,13 +158,13 @@ class Model:
                 tmprow = first.row + 1
                 tmpcolumn = first.column + 1
                 while tmprow != second.row and tmpcolumn != second.column:
-                    if type(self.board[tmprow][tmpcolumn]) is not PustePole:
-                        p = self.board[tmprow][tmpcolumn]
+                    if type(self.__board[tmprow][tmpcolumn]) is not PustePole:
+                        p = self.__board[tmprow][tmpcolumn]
                         break
                     tmprow = tmprow + 1
                     tmpcolumn = tmpcolumn + 1
             p = PustePole(text="b", bg="black", fg="white", row=p.row, column=p.column)
-            self.board[p.row][p.column] = p
+            self.__board[p.row][p.column] = p
             self.__controller.update_button(p)
         self.switch_places(first, second)
         if self.__player_round is 1:
@@ -189,31 +192,39 @@ class Model:
 
     def switch_to_damka(self, pionek):
         if self.__player_round is 1:
-            if pionek.row is self.n - 1:
+            if pionek.row is self.__n - 1:
                 d = Damka(text="PbD", row=pionek.row, column=pionek.column,
                                                               player=1)
-                self.board[pionek.row][pionek.column] = d
+                self.__board[pionek.row][pionek.column] = d
                 self.__controller.update_button(d)
         elif self.__player_round is 2:
             if pionek.row is 0:
                 d = Damka(text="PcD", row=pionek.row, column=pionek.column,
                                                               player=2)
-                self.board[pionek.row][pionek.column] = d
+                self.__board[pionek.row][pionek.column] = d
                 self.__controller.update_button(d)
 
     def multiple_beating(self, first):
-        first.find_and_set_beating(self.board, self.n)
+        first.find_and_set_beating(self.__board, self.__n)
         if first.beating() is True:
             return True
         else:
             return False
 
     def create_testing_board(self, number):
+        if number == 1:
+            self.__board = [["bc"[(i + j + self.__n % 2 + 1) % 2] for i in range(self.__n)] for j in range(self.__n)]
+            for x in range(0, self.__n, 1):
+                for y in range(0, self.__n, 1):
+                    if self.__board[x][y] == 'c':
+                        self.__board[x][y] = PustePole(text='b', bg='black', row=x, column=y)
+                    else:
+                        self.__board[x][y] = PustePole(text='w', bg='white', row=x, column=y)
+        self.__controller.create_testing_board(self.__board)
         # po kliknieciu na przyciski z prawej strony które MUSZE GENEROWAC TUTAJ A NIE W VIEW
         # powinno uruchomik odpowiednią planszę testową o odpowiednim numerze :P
         # controler wysyla informacje o kliknieciu, ustawiamy zmienne modelu tworzymy odpowiedni board i wysylamy do funkcji
         # create_testing_board
-        pass
 
     def reset_game(self):
         if self.__selected_button is not None:
@@ -223,3 +234,10 @@ class Model:
         self.__player2_pionki = 12
         self.__controller.reset()
         self.__reset = True
+
+    def hard_reset(self):
+        if self.__selected_button is not None:
+            self.__selected_button = None
+        self.__player_round = 1
+        self.__player1_pionki = 12
+        self.__player2_pionki = 12
