@@ -212,15 +212,40 @@ class Model:
             return False
 
     def create_testing_board(self, number):
-        if number == 1:
-            self.__board = [["bc"[(i + j + self.__n % 2 + 1) % 2] for i in range(self.__n)] for j in range(self.__n)]
-            for x in range(0, self.__n, 1):
-                for y in range(0, self.__n, 1):
-                    if self.__board[x][y] == 'c':
-                        self.__board[x][y] = PustePole(text='b', bg='black', row=x, column=y)
-                    else:
-                        self.__board[x][y] = PustePole(text='w', bg='white', row=x, column=y)
+        self.__board = [["bc"[(i + j + self.__n % 2 + 1) % 2] for i in range(self.__n)] for j in range(self.__n)]
+        for x in range(0, self.__n, 1):
+            for y in range(0, self.__n, 1):
+                if self.__board[x][y] == 'c':
+                    self.__board[x][y] = PustePole(text='b', bg='black', row=x, column=y)
+                else:
+                    self.__board[x][y] = PustePole(text='w', bg='white', row=x, column=y)
+        if number == 4:
+            self.__board[1][1] = ZwyklyPionek(text='Pb', bg='black', fg='white', row=1, column=1, player=1)
+            self.__board[1][1].set_beating()
+            self.__board[2][2] = ZwyklyPionek(text='Pc', bg='black', fg='black', row=2, column=2, player=2)
+            self.__board[2][2].unset_beating()
+            self.__board[4][4] = ZwyklyPionek(text='Pc', bg='black', fg='black', row=4, column=4, player=2)
+            self.__board[4][4].unset_beating()
+            self.__board[4][6] = ZwyklyPionek(text='Pc', bg='black', fg='black', row=4, column=6, player=2)
+            self.__board[4][6].unset_beating()
+            Pionek.have_beating1 = True
+            Pionek.have_beating2 = False
+            self.__player_round = 1
+            self.__player1_pionki = 1
+            self.__player2_pionki = 3
+        if number == 5:
+            self.__board[1][1] = ZwyklyPionek(text='Pc', bg='black', fg='black', row=1, column=1, player=2)
+            self.__board[1][1].unset_beating()
+            self.__board[1][5] = ZwyklyPionek(text='Pb', bg='black', fg='black', row=1, column=5, player=1)
+            self.__board[1][5].unset_beating()
+            Pionek.have_beating1 = False
+            Pionek.have_beating2 = False
+            self.__player_round = 2
+            self.__player1_pionki = 1
+            self.__player2_pionki = 1
         self.__controller.create_testing_board(self.__board)
+        if self.__player_round == 2:
+            self.__controller.change_round()
         # po kliknieciu na przyciski z prawej strony które MUSZE GENEROWAC TUTAJ A NIE W VIEW
         # powinno uruchomik odpowiednią planszę testową o odpowiednim numerze :P
         # controler wysyla informacje o kliknieciu, ustawiamy zmienne modelu tworzymy odpowiedni board i wysylamy do funkcji
@@ -234,6 +259,8 @@ class Model:
         self.__player2_pionki = 12
         self.__controller.reset()
         self.__reset = True
+        Pionek.have_beating1 = False
+        Pionek.have_beating2 = False
 
     def hard_reset(self):
         if self.__selected_button is not None:
@@ -241,3 +268,5 @@ class Model:
         self.__player_round = 1
         self.__player1_pionki = 12
         self.__player2_pionki = 12
+        Pionek.have_beating1 = False
+        Pionek.have_beating2 = False

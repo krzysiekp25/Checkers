@@ -23,7 +23,8 @@ class View(tk.Frame):
         self.__round = None
         self.__quit = None
         self.__reset = None
-        self.__test1 = None
+        self.__test4 = None
+        self.__test5 = None
 
 
     def add_controller(self, controller):
@@ -52,16 +53,20 @@ class View(tk.Frame):
                 buf = self.__buttons[x][y]
                 buf.grid(row=tmp.row, column=tmp.column)
         self.__quit = tk.Button(self, text="ZAMKNIJ", fg="black", command=self.__root.destroy, font=(None, 10))
-        self.__quit.grid(row=2, column=8)
+        self.__quit.grid(row=1, column=8)
         self.__round = tk.Label(self, text="Tura gracza 1", fg="black", height=1, width=15, font=(None, 20))
         self.__round.grid(row=0, column=8)
 
-        self.__reset = tk.Button(self, text="Resetuj planszę", fg="black", command=self.__controller.hard_reset, font=(None, 10))
-        self.__reset.grid(row=3, column=8)
+        self.__reset = tk.Button(self, text="Resetuj grę", fg="black", command=self.__controller.hard_reset, font=(None, 10))
+        self.__reset.grid(row=2, column=8)
 
-        self.__test1 = tk.Button(self, text="Testowa plansza 1", fg="black", command=lambda n=1: self.__controller.clicked_test(n),
+        self.__test4 = tk.Button(self, text="Test 4, 8", fg="black", command=lambda n=4: self.__controller.clicked_test(n),
                                  font=(None, 10))
-        self.__test1.grid(row=4, column=8)
+        self.__test4.grid(row=3, column=8)
+
+        self.__test5 = tk.Button(self, text="Test 5, 6, 7, 8", fg="black", command=lambda n=5: self.__controller.clicked_test(n),
+                                 font=(None, 10))
+        self.__test5.grid(row=4, column=8)
 
     def start_loop(self):
         self.mainloop()
